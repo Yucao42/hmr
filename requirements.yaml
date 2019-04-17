@@ -1,0 +1,17 @@
+name: hmr3
+dependencies:
+- python>=3.7
+- numpy 
+- pip:
+        - scipy
+        - numpy
+        - opendr
+        - matplotlib
+        - scikit-image
+        - deepdish>=0.3
+        - opencv-python >=3.4, <=3.5
+        - tensorflow
+        - absl-py
+        - ipdb
+          #- nolearn == 0.5b1 #- scipy #>= 0.13, < 0.17
+          #- scikit-learn #>= 0.17, < 0.18
