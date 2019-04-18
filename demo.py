@@ -31,6 +31,7 @@ from src.util import image as img_util
 from src.util import openpose as op_util
 import src.config
 from src.RunModel import RunModel
+from datetime import datetime as dt
 
 flags.DEFINE_string('img_path', 'data/im1963.jpg', 'Image to run')
 flags.DEFINE_string(
@@ -86,9 +87,6 @@ def visualize(img, proc_param, joints, verts, cam):
     plt.axis('off')
     plt.draw()
     plt.show()
-    # import ipdb
-    # ipdb.set_trace()
-
 
 def preprocess_image(img_path, json_path=None):
     img = io.imread(img_path)
@@ -120,18 +118,24 @@ def main(img_path, json_path=None):
     sess = tf.Session()
     model = RunModel(config, sess=sess)
 
+    start = dt.now()
     input_img, proc_param, img = preprocess_image(img_path, json_path)
     # Add batch dimension: 1 x D x D x 3
     input_img = np.expand_dims(input_img, 0)
+    print('Preprocessing time {:.2f} s'.format((dt.now()- start).total_seconds()))
 
     # Theta is the 85D vector holding [camera, pose, shape]
     # where camera is 3D [s, tx, ty]
     # pose is 72D vector holding the rotation of 24 joints of SMPL in axis angle format
     # shape is 10D shape coefficients of SMPL
+    start = dt.now()
     joints, verts, cams, joints3d, theta = model.predict(
         input_img, get_theta=True)
+    print('Model inference time {:.2f} s'.format((dt.now()- start).total_seconds()))
 
+    start = dt.now()
     visualize(img, proc_param, joints[0], verts[0], cams[0])
+    print('Visualization time {:.2f} s'.format((dt.now()- start).total_seconds()))
 
 
 if __name__ == '__main__':
